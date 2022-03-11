@@ -20,8 +20,22 @@ public class Ball {
         x += dX;
         y += dY;
 
-        dX -= .02;
-        dY -= .02;
+        if (x - RADIUS < 0) {
+            x = RADIUS;
+            dX *= -.9;
+        } if (x + RADIUS >= Pool.WIDTH) {
+            x = Pool.WIDTH - RADIUS - 1;
+            dX *= -.9;
+        } if (y - RADIUS < 0) {
+            y = RADIUS;
+            dY *= -.9;
+        } if (y + RADIUS >= Pool.HEIGHT) {
+            y = Pool.HEIGHT - RADIUS - 1;
+            dY *= -.9;
+        }
+
+        dX -= .05;
+        dY -= .05;
     }
 
     public void draw(Graphics g) {
