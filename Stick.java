@@ -8,7 +8,7 @@ public class Stick {
 
     public static final int SIZE = 250;
 
-    public static final int FULL_SPEED = 40;
+    public static final int FULL_SPEED = 20;
 
     public Stick(double x, double y, double direction) {
         this.x = x;

@@ -5,6 +5,7 @@ import java.awt.event.*;
 
 public class Pool extends JFrame {
     private Ball cueBall;
+    private Ball test;
     private Stick stick;
 
     public static final int WIDTH = 800;
@@ -25,7 +26,8 @@ public class Pool extends JFrame {
     }
 
     private void initGUI() {
-        cueBall = new Ball();
+        cueBall = new Ball(Color.WHITE);
+        test = new Ball();
         stick = new Stick(WIDTH / 2, HEIGHT / 2, 0);
         main = new JPanel() {
             public void paintComponent(Graphics g) {
@@ -59,7 +61,6 @@ public class Pool extends JFrame {
         sidePanel.add(Box.createRigidArea(new Dimension(0, 5)));
         sidePanel.add(fireButton);
         add(sidePanel, BorderLayout.EAST);
-        
     
         Timer timer = new Timer(1000 / 24, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -72,7 +73,13 @@ public class Pool extends JFrame {
 
     private void tick() {
         cueBall.update();
-        if (!fireButton.isEnabled() && !cueBall.isMoving()) {
+        test.update();
+
+        if (cueBall.isTouching(test)) {
+            cueBall.collideWith(test);
+        }
+
+        if (!fireButton.isEnabled() && !cueBall.isMoving() && !test.isMoving()) {
             stick.setX(cueBall.getX());
             stick.setY(cueBall.getY());
             stick.setDirection(0);
@@ -91,6 +98,7 @@ public class Pool extends JFrame {
 
         // Make sure drawing the stick comes last because it has to rotate the graphics
         cueBall.draw(g);
+        test.draw(g);
         stick.draw(g);
     }
 

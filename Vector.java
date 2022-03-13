@@ -15,6 +15,14 @@ public class Vector {
         return new Vector(Math.cos(direction) * magnitude, Math.sin(direction) * magnitude);
     }
 
+    public static Vector scaleVector(Vector vector, double scalar) {
+        return new Vector(vector.getX() * scalar, vector.getY() * scalar);
+    }
+
+    public static Vector createUnitVector(Vector vector) {
+        return scaleVector(vector, (1 / vector.getMagnitude()));
+    }
+
     public static Vector add(Vector v1, Vector v2) {
         return new Vector(v1.getX() + v2.getX(), v1.getY() + v2.getY());
     }
