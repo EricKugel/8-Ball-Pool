@@ -10,16 +10,14 @@ public class Ball {
     private double dX;
     private double dY;
 
-    public Ball(Color color) {
+    public Ball(Color color, int x, int y) {
         this.color = color;
-        this.x = Pool.WIDTH / 2;
-        this.y = Pool.HEIGHT / 2;
-        this.dX = 0;
-        this.dY = 0;
+        this.x = x;
+        this.y = y;
     }
 
     public Ball() {
-        this(Color.RED);
+        this(Color.WHITE, Pool.WIDTH / 2, Pool.HEIGHT / 2);
         x += 70;
         y -= 30;
     }

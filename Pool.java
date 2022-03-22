@@ -5,7 +5,7 @@ import java.awt.event.*;
 
 public class Pool extends JFrame {
     private Ball cueBall;
-    private Ball test;
+    private Ball[] balls = new Ball[10];
     private Stick stick;
 
     public static final int WIDTH = 800;
@@ -26,8 +26,15 @@ public class Pool extends JFrame {
     }
 
     private void initGUI() {
-        cueBall = new Ball(Color.WHITE);
-        test = new Ball();
+        cueBall = new Ball();
+        Color[] colors = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.BLUE, Color.RED, Color.BLACK, Color.GRAY, Color.CYAN, Color.LIGHT_GRAY};
+        int xPoints = {0, 1, 1, 2, }
+        
+        for (int i = 0; i < balls.length; i++) {
+            Ball ball = new Ball(colors[i]);
+            balls[i] = ball;
+        }
+
         stick = new Stick(WIDTH / 2, HEIGHT / 2, 0);
         main = new JPanel() {
             public void paintComponent(Graphics g) {
@@ -73,13 +80,33 @@ public class Pool extends JFrame {
 
     private void tick() {
         cueBall.update();
-        test.update();
-
-        if (cueBall.isTouching(test)) {
-            cueBall.collideWith(test);
+        for (Ball ball : balls) {
+            ball.update();
         }
 
-        if (!fireButton.isEnabled() && !cueBall.isMoving() && !test.isMoving()) {
+        for (Ball ball : balls) {
+            if (cueBall.isTouching(ball)) {
+                cueBall.collideWith(ball);
+            }
+            
+            for (Ball otherBall : balls) {
+                if (ball.isTouching(otherBall)) {
+                    ball.collideWith(otherBall);
+                }
+            }
+        }
+
+        boolean isMoving = cueBall.isMoving();
+        if (!isMoving) {
+            for (Ball ball : balls) {
+                if (ball.isMoving()) {
+                    isMoving = true;
+                    break;
+                }
+            }
+        }
+
+        if (!fireButton.isEnabled() && isMoving) {
             stick.setX(cueBall.getX());
             stick.setY(cueBall.getY());
             stick.setDirection(0);
@@ -98,7 +125,9 @@ public class Pool extends JFrame {
 
         // Make sure drawing the stick comes last because it has to rotate the graphics
         cueBall.draw(g);
-        test.draw(g);
+        for (Ball ball : balls) {
+            ball.draw(g);
+        }
         stick.draw(g);
     }
 
