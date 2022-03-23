@@ -57,14 +57,17 @@ public class Ball {
         y = other.getY() - Math.sin(getVector().getDirection()) * Ball.RADIUS * 2;
         
         double theta = Math.atan((other.getY() - y) / (other.getX() - x)) + (other.getX() - x < 0 ? Math.PI : 0);
-        double speed1 = getVector().getMagnitude();
-        other.setVector(new Vector(speed1 * Math.cos(theta), speed1 * Math.sin(theta)));
-        if (theta == 0) {
-            setVector(new Vector(0, 0));
-        } else {
-            // setVector(new Vector());
-        }
-
+        other.setVector(Vector.createVectorFromTrig(theta, getVector().getMagnitude() * Math.cos(theta)));
+        setVector(Vector.createVectorFromTrig(theta + Math.PI / 2, getVector().getMagnitude() * Math.sin(theta)));
+        
+        // System.out.println(theta);
+        // double speed1 = getVector().getMagnitude();
+        // other.setVector(new Vector(speed1 * Math.cos(theta), speed1 * Math.sin(theta)));
+        // if (theta == 0) {
+        //     setVector(new Vector(0, 0));
+        // } else {
+        //     // setVector(new Vector());
+        // }
     }
 
     public boolean isTouching(Ball other) {
