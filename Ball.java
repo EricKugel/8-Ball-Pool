@@ -10,7 +10,7 @@ public class Ball {
     private double dX;
     private double dY;
 
-    public Ball(Color color, int x, int y) {
+    public Ball(Color color, double x, double y) {
         this.color = color;
         this.x = x;
         this.y = y;
@@ -18,8 +18,9 @@ public class Ball {
 
     public Ball() {
         this(Color.WHITE, Pool.WIDTH / 2, Pool.HEIGHT / 2);
-        x += 70;
-        y -= 30;
+        this.color = Color.WHITE;
+        this.x = Pool.WIDTH / 4;
+        this.y = Pool.HEIGHT / 2;
     }
 
     public void update() {
@@ -47,11 +48,23 @@ public class Ball {
     }
 
     public void collideWith(Ball other) {
+        if (other.getVector().getMagnitude() > getVector().getMagnitude()) {
+            other.collideWith(this);
+            return;
+        }
+
         x = other.getX() - Math.cos(getVector().getDirection()) * Ball.RADIUS * 2;
         y = other.getY() - Math.sin(getVector().getDirection()) * Ball.RADIUS * 2;
-        Vector temp = getVector();
-        setVector(Vector.scaleVector(other.getVector(), .9));
-        other.setVector(Vector.scaleVector(temp, .9));
+        
+        double theta = Math.atan((other.getY() - y) / (other.getX() - x)) + (other.getX() - x < 0 ? Math.PI : 0);
+        double speed1 = getVector().getMagnitude();
+        other.setVector(new Vector(speed1 * Math.cos(theta), speed1 * Math.sin(theta)));
+        if (theta == 0) {
+            setVector(new Vector(0, 0));
+        } else {
+            // setVector(new Vector());
+        }
+
     }
 
     public boolean isTouching(Ball other) {

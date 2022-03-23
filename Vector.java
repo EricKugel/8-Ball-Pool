@@ -27,6 +27,14 @@ public class Vector {
         return new Vector(v1.getX() + v2.getX(), v1.getY() + v2.getY());
     }
 
+    public static double dotProduct(Vector u, Vector v) {
+        return u.getX() * v.getX() + u.getY() * v.getY();
+    }
+
+    public static Vector proj(Vector u, Vector v) {
+        return scaleVector(v, dotProduct(u, v) / Math.pow(u.getMagnitude(), 2));
+    }
+
     public double getX() {
         return x;
     }
@@ -41,5 +49,16 @@ public class Vector {
 
     public double getMagnitude() {
         return magnitude;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + x + ", " + y + ">";
+    }
+
+    public static void main (String[] arg0) {
+        Vector u = new Vector(3, 4);
+        Vector v = new Vector(5, -12);
+        System.out.println(proj(u, v));
     }
 }
