@@ -32,7 +32,7 @@ public class Vector {
     }
 
     public static Vector proj(Vector u, Vector v) {
-        return scaleVector(v, dotProduct(u, v) / Math.pow(u.getMagnitude(), 2));
+        return scaleVector(v, dotProduct(u, v) / Math.pow(v.getMagnitude(), 2));
     }
 
     public double getX() {
@@ -59,6 +59,6 @@ public class Vector {
     public static void main (String[] arg0) {
         Vector u = new Vector(3, 4);
         Vector v = new Vector(5, -12);
-        System.out.println(proj(u, v));
+        // System.out.println(proj(u, v));
     }
 }
