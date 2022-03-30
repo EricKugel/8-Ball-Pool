@@ -59,6 +59,6 @@ public class Vector {
     public static void main (String[] arg0) {
         Vector u = new Vector(3, 4);
         Vector v = new Vector(5, -12);
-        // System.out.println(proj(u, v));
+        System.out.println(proj(u, v));
     }
 }

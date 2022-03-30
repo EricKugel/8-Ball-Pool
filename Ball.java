@@ -1,7 +1,7 @@
 import java.awt.*;
 
 public class Ball {
-    public static final int RADIUS = 10;
+    public static final int RADIUS = 20;
 
     private Color color;
 
@@ -9,6 +9,8 @@ public class Ball {
     private double y;
     private double dX;
     private double dY;
+
+    private Ball lastHit = null;
 
     public Ball(Color color, double x, double y) {
         this.color = color;
@@ -46,28 +48,25 @@ public class Ball {
         newSpeed = newSpeed < 0 ? 0 : newSpeed;
         setVector(Vector.createVectorFromTrig(vector.getDirection(), newSpeed));
     }
-
+    
     public void collideWith(Ball other) {
-        if (other.getVector().getMagnitude() > getVector().getMagnitude()) {
-            other.collideWith(this);
-            return;
-        }
+        Vector collisionVector = new Vector(x - other.getX(), y - other.getY());
+        double distance = collisionVector.getMagnitude();
+        x += (x - other.getX()) * (((Ball.RADIUS * 2) - distance) / distance) * 0.5;
+        y += (y - other.getY()) * (((Ball.RADIUS * 2) - distance) / distance) * 0.5;
+        other.setX(other.getX() - (x - other.getX()) * (((Ball.RADIUS * 2) - distance) / distance) * 0.5);
+        other.setY(other.getY() - (y - other.getY()) * (((Ball.RADIUS * 2) - distance) / distance) * 0.5);
 
-        x = other.getX() - Math.cos(getVector().getDirection()) * Ball.RADIUS * 2;
-        y = other.getY() - Math.sin(getVector().getDirection()) * Ball.RADIUS * 2;
+        Vector unitCollisionVector = Vector.createUnitVector(collisionVector);
+        Vector unitTangentVector = new Vector(unitCollisionVector.getY() * -1, unitCollisionVector.getX());
+
+        double collisionVelocity1 = Vector.dotProduct(getVector(), unitCollisionVector);
+        double tangentVelocity1 = Vector.dotProduct(getVector(), unitTangentVector);
+        double collisionVelocity2 = Vector.dotProduct(other.getVector(), unitCollisionVector);
+        double tangentVelocity2 = Vector.dotProduct(other.getVector(), unitTangentVector);
         
-        double theta = Math.atan((other.getY() - y) / (other.getX() - x)) + (other.getX() - x < 0 ? Math.PI : 0);
-        other.setVector(Vector.createVectorFromTrig(theta, getVector().getMagnitude() * Math.cos(theta)));
-        setVector(Vector.createVectorFromTrig(theta + Math.PI / 2, getVector().getMagnitude() * Math.sin(theta)));
-        
-        // System.out.println(theta);
-        // double speed1 = getVector().getMagnitude();
-        // other.setVector(new Vector(speed1 * Math.cos(theta), speed1 * Math.sin(theta)));
-        // if (theta == 0) {
-        //     setVector(new Vector(0, 0));
-        // } else {
-        //     // setVector(new Vector());
-        // }
+        setVector(Vector.add(Vector.scaleVector(unitTangentVector, tangentVelocity2), Vector.scaleVector(unitTangentVector, tangentVelocity1)));
+        other.setVector(Vector.add(Vector.scaleVector(unitCollisionVector, collisionVelocity2), Vector.scaleVector(unitCollisionVector, collisionVelocity1)));
     }
 
     public boolean isTouching(Ball other) {
@@ -95,8 +94,36 @@ public class Ball {
         return y;
     }
 
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
     public void draw(Graphics g) {
-        g.setColor(color);
-        g.fillArc((int) x - RADIUS, (int) y - RADIUS, RADIUS * 2, RADIUS * 2, 0, 360);
+        for (int x = RADIUS * -1; x < RADIUS; x++) {
+            for (int y = RADIUS * -1; y < RADIUS; y++) {
+                if (Math.hypot(x, y) <= RADIUS) {
+                    double direction = Math.PI / 2;
+                    double relativeX = x - RADIUS / -2;
+                    double relativeY = y - RADIUS / -2;
+                    if (relativeX != 0) {
+                        direction = (Math.atan(relativeY / relativeX));
+                        if (relativeX < 0) {
+                            direction += Math.PI;
+                        }
+                    }
+                    double maxDistance = Math.hypot(RADIUS * Math.cos(direction) - Ball.RADIUS / 2 * -1, RADIUS * Math.sin(direction) - Ball.RADIUS / 2 * -1);
+                    double brightnessScale = Math.hypot(x - Ball.RADIUS / 2 * -1, y - Ball.RADIUS / 2 * -1) / maxDistance;
+                    int red = (int) (255 * (1 - brightnessScale) + color.getRed() * brightnessScale);
+                    int green = (int) (255 * (1 - brightnessScale) + color.getGreen() * brightnessScale);
+                    int blue = (int) (255 * (1 - brightnessScale) + color.getBlue() * brightnessScale);
+                    g.setColor(new Color(red, green, blue));
+                    g.drawLine((int) (x + this.x), (int) (y + this.y), (int) (x + this.x), (int) (y + this.y));
+                }
+            }
+        }
     }
 }

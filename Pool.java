@@ -94,14 +94,14 @@ public class Pool extends JFrame {
             ball.update();
         }
 
-        for (Ball ball : balls) {
-            for (Ball otherBall : balls) {
-                if (ball != otherBall && ball.isTouching(otherBall)) {
-                    ball.collideWith(otherBall);
+        for (int i = 0; i < balls.length - 1; i++) {
+            for (int j = i + 1; j < balls.length; j++) {
+                if (balls[i].isTouching(balls[j])) {
+                    balls[i].collideWith(balls[j]);
                 }
             }
         }
-
+        
         boolean isMoving = cueBall.isMoving();
         if (!isMoving) {
             for (Ball ball : balls) {
