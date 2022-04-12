@@ -7,6 +7,7 @@ public class Pool extends JFrame {
     private Ball cueBall;
     private Ball[] balls = new Ball[11];
     private Stick stick;
+    private Hole[] holes = new Hole[6];
 
     public static final int WIDTH = 800;
     public static final int HEIGHT = 400;
@@ -52,6 +53,16 @@ public class Pool extends JFrame {
                 draw(g);
             }
         };
+
+
+        double holeX[] = {0, .5, 1, 0, .5, 1};
+        double holeY[] = {0, 0, 0, 1, 1, 1};
+        for (int i = 0; i < 6; i++) {
+            Hole hole = new Hole(holeX[i] * WIDTH, holeY[i] * HEIGHT);
+            holes[i] = hole;
+        }
+
+
         main.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         add(main, BorderLayout.CENTER);
 
@@ -126,14 +137,21 @@ public class Pool extends JFrame {
     }
 
     private void draw(Graphics g) {
-        g.setColor(new Color(18, 140, 39));
+        g.setColor(new Color(38, 160, 59));
         g.fillRect(0, 0, WIDTH, HEIGHT);
+        g.setColor(new Color(18, 140, 39));
+        g.fillRect(20, 20, WIDTH - 40, HEIGHT - 40);
 
         // Make sure drawing the stick comes last because it has to rotate the graphics
         cueBall.draw(g);
         for (Ball ball : balls) {
             ball.draw(g);
         }
+
+        for (Hole hole : holes) {
+            hole.draw(g);
+        }
+
         stick.draw(g);
     }
 

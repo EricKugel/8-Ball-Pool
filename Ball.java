@@ -1,7 +1,7 @@
 import java.awt.*;
 
 public class Ball {
-    public static final int RADIUS = 20;
+    public static final int RADIUS = 10;
 
     private Color color;
 
@@ -9,9 +9,7 @@ public class Ball {
     private double y;
     private double dX;
     private double dY;
-
-    private Ball lastHit = null;
-
+    
     public Ball(Color color, double x, double y) {
         this.color = color;
         this.x = x;
