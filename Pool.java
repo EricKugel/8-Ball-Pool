@@ -1,16 +1,22 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
 
+import java.awt.image.BufferedImage;
+
 public class Pool extends JFrame {
+    public static final int WIDTH = 518;
+    public static final int HEIGHT = 296;
+    public static final int WALL_SIZE = 37;
+
+    private static BufferedImage tableImage = null;
+
     private Ball cueBall;
     private Ball[] balls = new Ball[11];
     private Stick stick;
     private Hole[] holes = new Hole[6];
-
-    public static final int WIDTH = 800;
-    public static final int HEIGHT = 400;
 
     private JPanel main;
     private JPanel sidePanel;
@@ -55,11 +61,22 @@ public class Pool extends JFrame {
         };
 
 
-        double holeX[] = {0, .5, 1, 0, .5, 1};
-        double holeY[] = {0, 0, 0, 1, 1, 1};
-        for (int i = 0; i < 6; i++) {
-            Hole hole = new Hole(holeX[i] * WIDTH, holeY[i] * HEIGHT);
-            holes[i] = hole;
+        // double holeX[] = {Math.sqrt(2), WIDTH / 2, 1, 0, .5, 1};
+        // double holeY[] = {0, 0, 0, 1, 1, 1};
+        // for (int i = 0; i < 6; i++) {
+        //     x = holeX[i] * WIDTH;
+        //     y = holeY[i] * HEIGHT;
+        //     if (holeX[i] != 0.5) {
+            
+        //     }
+        //     Hole hole = new Hole(holeX[i] * WIDTH, holeY[i] * HEIGHT);
+        //     holes[i] = hole;
+        // }
+
+        try {
+            tableImage = ImageIO.read(getClass().getResourceAsStream("table.jpg"));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
 
@@ -137,10 +154,11 @@ public class Pool extends JFrame {
     }
 
     private void draw(Graphics g) {
-        g.setColor(new Color(38, 160, 59));
-        g.fillRect(0, 0, WIDTH, HEIGHT);
-        g.setColor(new Color(18, 140, 39));
-        g.fillRect(20, 20, WIDTH - 40, HEIGHT - 40);
+        // g.setColor(new Color(38, 160, 59));
+        // g.fillRect(0, 0, WIDTH, HEIGHT);
+        // g.setColor(new Color(18, 140, 39));
+        // g.fillRect(WALL_SIZE, WALL_SIZE, WIDTH - WALL_SIZE * 2, HEIGHT - WALL_SIZE * 2);
+        g.drawImage(tableImage, 0, 0, null);
 
         // Make sure drawing the stick comes last because it has to rotate the graphics
         cueBall.draw(g);
@@ -148,9 +166,9 @@ public class Pool extends JFrame {
             ball.draw(g);
         }
 
-        for (Hole hole : holes) {
-            hole.draw(g);
-        }
+        // for (Hole hole : holes) {
+        //     hole.draw(g);
+        // }
 
         stick.draw(g);
     }
@@ -161,6 +179,10 @@ public class Pool extends JFrame {
         fireButton.setEnabled(false);
         stick.setDistanceFromBall(0);
         slider.setValue(0);
+    }
+
+    public static boolean isHole(int x, int y) {
+        return tableImage.getRGB(x, y) == Color.BLACK.getRGB();
     }
 
     public static void main(String[] arg0) {

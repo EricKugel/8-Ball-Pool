@@ -1,7 +1,7 @@
 import java.awt.*;
 
 public class Ball {
-    public static final int RADIUS = 10;
+    public static final int RADIUS = 7;
 
     private Color color;
 
@@ -9,6 +9,8 @@ public class Ball {
     private double y;
     private double dX;
     private double dY;
+
+    private boolean sunk = false;
     
     public Ball(Color color, double x, double y) {
         this.color = color;
@@ -24,22 +26,41 @@ public class Ball {
     }
 
     public void update() {
+        if (sunk) {
+            return;
+        }
+
         x += dX;
         y += dY;
 
-        if (x - RADIUS < 0) {
-            x = RADIUS;
-            dX *= -.75;
-        } if (x + RADIUS >= Pool.WIDTH) {
-            x = Pool.WIDTH - RADIUS - 1;
-            dX *= -.75;
-        } if (y - RADIUS < 0) {
-            y = RADIUS;
-            dY *= -.75;
-        } if (y + RADIUS >= Pool.HEIGHT) {
-            y = Pool.HEIGHT - RADIUS - 1;
-            dY *= -.75;
+        boolean touchingHole = false;
+        for (int pixelX = (int) x - RADIUS; pixelX < x + RADIUS && !touchingHole; pixelX++) {
+            for (int pixelY = (int) y - RADIUS; pixelY < y + RADIUS && !touchingHole; y++) {
+                if (Math.abs(Math.hypot(pixelX - x, pixelY - y) - RADIUS) < 2) {
+                    touchingHole = Pool.isHole(pixelX, pixelY);
+                }
+            }
         }
+
+        if (!touchingHole) {
+            if (x - RADIUS < Pool.WALL_SIZE) {
+                x = RADIUS + Pool.WALL_SIZE;
+                dX *= -.75;
+            } if (x + RADIUS >= Pool.WIDTH - Pool.WALL_SIZE) {
+                x = Pool.WIDTH - Pool.WALL_SIZE - RADIUS - 1;
+                dX *= -.75;
+            } if (y - RADIUS < Pool.WALL_SIZE) {
+                y = Pool.WALL_SIZE + RADIUS;
+                dY *= -.75;
+            } if (y + RADIUS >= Pool.HEIGHT - Pool.WALL_SIZE) {
+                y = Pool.HEIGHT - Pool.WALL_SIZE - RADIUS - 1;
+                dY *= -.75;
+            }
+        } else {
+            if (Pool.isHole((int) x, (int) y)) {
+                sink();
+            }
+        }        
 
         Vector vector = getVector();
         double newSpeed = vector.getMagnitude() -.05;
@@ -65,6 +86,14 @@ public class Ball {
         
         setVector(Vector.add(Vector.scaleVector(unitTangentVector, tangentVelocity2), Vector.scaleVector(unitTangentVector, tangentVelocity1)));
         other.setVector(Vector.add(Vector.scaleVector(unitCollisionVector, collisionVelocity2), Vector.scaleVector(unitCollisionVector, collisionVelocity1)));
+    }
+
+    private void sink() {
+        sunk = true;
+    }
+
+    public boolean isSunk() {
+        return sunk;
     }
 
     public boolean isTouching(Ball other) {
@@ -101,6 +130,10 @@ public class Ball {
     }
 
     public void draw(Graphics g) {
+        if (sunk) {
+            return;
+        }
+        
         for (int x = RADIUS * -1; x < RADIUS; x++) {
             for (int y = RADIUS * -1; y < RADIUS; y++) {
                 if (Math.hypot(x, y) <= RADIUS) {
